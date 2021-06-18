@@ -1,0 +1,17 @@
+{% extends 'home_page.html' %}
+{% load static %}
+
+
+{% block content %}
+
+    <table>
+        <form action="" method="POST">
+            {% csrf_token %}
+            {{form.as_table}}
+           <tr><td></td><td><input type="submit" value="Создать"></td></tr>
+        </form>
+    </table>
+{{ message }}
+
+
+{% endblock %}

@@ -1,7 +1,7 @@
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponse
-from django.shortcuts import render
-from django.views.generic import DetailView
+from django.http import HttpResponse, HttpResponseRedirect
+from django.shortcuts import render, redirect
+from django.views.generic import DetailView, CreateView
 from rest_framework.views import Response, APIView
 from .models import *
 from .serializers import *
@@ -40,3 +40,21 @@ class SubjectView(DetailView):
         context = super(SubjectView, self).get_context_data(**kwargs)
         context['subjects'] = self.get_queryset()
         return context
+
+
+class MyCreateView(CreateView):
+    template_name = 'creation_form.html'
+    fields = '__all__'
+    
+    def get_success_url(self):
+        return f"/{self.request.GET.get('next', None)}" or self.request.path
+
+    def form_valid(self, form):
+        super(MyCreateView, self).form_valid(form)
+        context = self.get_context_data(message='Создание объекта произошло успешно')
+        success_url = self.get_success_url()
+        if success_url == self.request.path:
+            return self.render_to_response(context)
+        else:
+            return HttpResponseRedirect(success_url)
+
